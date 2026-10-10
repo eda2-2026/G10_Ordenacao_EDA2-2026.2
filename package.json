@@ -1,0 +1,13 @@
+{
+  "name": "autosort",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aplicacao academica para implementar e comparar algoritmos de ordenacao.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
