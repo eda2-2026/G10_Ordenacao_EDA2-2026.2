@@ -1,5 +1,3 @@
-// Movimentação: cada atribuição de elemento em uma posição do array conta 1.
-// Uma troca (swap) faz 3 atribuições, então conta 3.
 
 export function createMetrics() {
   return {
