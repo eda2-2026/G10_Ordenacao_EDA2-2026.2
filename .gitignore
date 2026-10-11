@@ -10,4 +10,7 @@ Thumbs.db
 .idea/
 .vscode/
 
-data/raw/
+data/raw
+data/vehicles.json
+
+
