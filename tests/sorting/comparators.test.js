@@ -1,7 +1,15 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { byField, compareNumbers, compareStrings, descending, isMissing } from '../../src/sorting/comparators.js';
+import {
+  SORT_FIELDS,
+  byField,
+  compareNumbers,
+  compareStrings,
+  createComparator,
+  descending,
+  isMissing,
+} from '../../src/sorting/comparators.js';
 
 describe('compareNumbers', () => {
   it('retorna negativo, positivo ou zero conforme a ordem crescente', () => {
@@ -106,5 +114,48 @@ describe('descending', () => {
 
     assert.ok(porPrecoDesc(caro, barato) < 0);
     assert.ok(porPrecoDesc(semPreco, barato) > 0);
+  });
+});
+
+describe('SORT_FIELDS', () => {
+  it('define os cinco critérios do catálogo', () => {
+    assert.deepEqual(Object.keys(SORT_FIELDS), ['brand', 'model', 'price', 'year', 'mileage']);
+  });
+
+  it('usa comparação de texto para marca e modelo e numérica para o resto', () => {
+    assert.equal(SORT_FIELDS.brand, compareStrings);
+    assert.equal(SORT_FIELDS.model, compareStrings);
+    assert.equal(SORT_FIELDS.price, compareNumbers);
+    assert.equal(SORT_FIELDS.year, compareNumbers);
+    assert.equal(SORT_FIELDS.mileage, compareNumbers);
+  });
+});
+
+describe('createComparator', () => {
+  const onix = { brand: 'Chevrolet', model: 'Onix', price: 80000, year: 2022, mileage: 30000 };
+  const argo = { brand: 'Fiat', model: 'Argo', price: 70000, year: 2021, mileage: null };
+
+  it('usa ordem crescente por padrão', () => {
+    assert.ok(createComparator('price')(argo, onix) < 0);
+    assert.ok(createComparator('brand')(onix, argo) < 0);
+  });
+
+  it('respeita a ordem decrescente', () => {
+    assert.ok(createComparator('year', 'desc')(onix, argo) < 0);
+    assert.ok(createComparator('model', 'desc')(onix, argo) < 0);
+  });
+
+  it('mantém valores ausentes no fim nas duas ordens', () => {
+    assert.ok(createComparator('mileage', 'asc')(argo, onix) > 0);
+    assert.ok(createComparator('mileage', 'desc')(argo, onix) > 0);
+  });
+
+  it('lança erro para critério inválido', () => {
+    assert.throws(() => createComparator('color'), /Critério de ordenação inválido/);
+    assert.throws(() => createComparator('toString'), /Critério de ordenação inválido/);
+  });
+
+  it('lança erro para ordem inválida', () => {
+    assert.throws(() => createComparator('price', 'up'), /Ordem de ordenação inválida/);
   });
 });
