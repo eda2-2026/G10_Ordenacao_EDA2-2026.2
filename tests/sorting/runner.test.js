@@ -25,9 +25,10 @@ describe('runSort', () => {
     assert.deepEqual(cars, original);
   });
 
-  it('preenche comparações e movimentações', () => {
-    const { comparisons, moves } = runSort(selectionSort, cars, { field: 'price' });
+  it('preenche comparações, trocas e movimentações', () => {
+    const { comparisons, swaps, moves } = runSort(selectionSort, cars, { field: 'price' });
     assert.equal(comparisons, 3); // n(n-1)/2 para n = 3
+    assert.equal(swaps, 1);
     assert.equal(moves, 3); // 1 troca: 45000 <-> 30000
   });
 
@@ -41,6 +42,7 @@ describe('runSort', () => {
     const run = runSort(selectionSort, [], { field: 'year' });
     assert.deepEqual(run.result, []);
     assert.equal(run.comparisons, 0);
+    assert.equal(run.swaps, 0);
     assert.equal(run.moves, 0);
   });
 

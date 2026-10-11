@@ -127,6 +127,7 @@ export function assertSortsCorrectly(algorithm) {
         assertInOrder(run.result, compare, label);
         assertSameIds(run.result, input, label);
         assert.ok(Number.isInteger(run.comparisons) && run.comparisons >= 0, `${label}: comparações inválidas`);
+        assert.ok(Number.isInteger(run.swaps) && run.swaps >= 0, `${label}: trocas inválidas`);
         assert.ok(Number.isInteger(run.moves) && run.moves >= 0, `${label}: movimentações inválidas`);
       }
     }

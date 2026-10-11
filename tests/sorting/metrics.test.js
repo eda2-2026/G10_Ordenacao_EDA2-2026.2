@@ -8,6 +8,7 @@ describe('createMetrics', () => {
   it('começa com os contadores zerados', () => {
     const metrics = createMetrics();
     assert.equal(metrics.comparisons, 0);
+    assert.equal(metrics.swaps, 0);
     assert.equal(metrics.moves, 0);
   });
 
@@ -22,6 +23,7 @@ describe('createMetrics', () => {
     const a = createMetrics();
     const b = createMetrics();
     a.move();
+    assert.equal(b.swaps, 0);
     assert.equal(b.moves, 0);
   });
 });
@@ -48,6 +50,7 @@ describe('countComparisons', () => {
   it('não altera as movimentações', () => {
     const metrics = createMetrics();
     countComparisons(compareNumbers, metrics)(1, 2);
+    assert.equal(metrics.swaps, 0);
     assert.equal(metrics.moves, 0);
   });
 });
@@ -59,12 +62,24 @@ describe('swap', () => {
     assert.deepEqual(arr, [30, 20, 10]);
   });
 
-  it('conta 3 movimentações por troca', () => {
+  it('conta uma troca e 3 movimentações por intercâmbio', () => {
     const metrics = createMetrics();
     const arr = [1, 2, 3];
     swap(arr, 0, 1, metrics);
     swap(arr, 1, 2, metrics);
+    assert.equal(metrics.swaps, 2);
     assert.equal(metrics.moves, 6);
     assert.equal(metrics.comparisons, 0);
+  });
+
+  it('não contabiliza troca entre a mesma posição', () => {
+    const metrics = createMetrics();
+    const arr = [1, 2, 3];
+
+    swap(arr, 1, 1, metrics);
+
+    assert.deepEqual(arr, [1, 2, 3]);
+    assert.equal(metrics.swaps, 0);
+    assert.equal(metrics.moves, 0);
   });
 });

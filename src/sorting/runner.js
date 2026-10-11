@@ -13,6 +13,7 @@ export function runSort(algorithm, data, { field, order = 'asc' } = {}) {
   return {
     result,
     comparisons: metrics.comparisons,
+    swaps: metrics.swaps,
     moves: metrics.moves,
     timeMs,
   };
