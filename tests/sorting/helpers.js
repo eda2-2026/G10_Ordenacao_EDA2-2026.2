@@ -15,7 +15,7 @@ export function selectionSort(arr, compare, metrics) {
   return arr;
 }
 
-// Gerador pseudoaleatório 
+// Gerador pseudoaleatório
 function createRandom(seed) {
   return () => {
     seed = (seed + 0x6d2b79f5) | 0;
@@ -57,6 +57,11 @@ const CASES = {
     const base = makeCars(3, 4);
     return Array.from({ length: 30 }, (_, id) => ({ ...base[id % 3], id }));
   },
+  'textos equivalentes para o comparador': () => [
+    { id: 0, brand: 'Citroën', model: 'Ágile', price: 50000, year: 2020, mileage: 30000 },
+    { id: 1, brand: 'citroen', model: 'agile', price: 50000, year: 2020, mileage: 30000 },
+    { id: 2, brand: 'Honda', model: 'Civic', price: 70000, year: 2022, mileage: 10000 },
+  ],
   'aleatória': () => makeCars(200, 5),
   'com valores ausentes': () =>
     makeCars(40, 6).map((car, i) => {
@@ -82,7 +87,31 @@ function withoutBuiltinSort(fn) {
   }
 }
 
-const ids = (cars) => cars.map((car) => car.id).sort((a, b) => a - b);
+function assertInOrder(cars, compare, label) {
+  for (let i = 1; i < cars.length; i++) {
+    assert.ok(compare(cars[i - 1], cars[i]) <= 0, `${label}: ordem incorreta nas posições ${i - 1} e ${i}`);
+  }
+}
+
+function assertSameIds(actual, expected, label) {
+  assert.equal(actual.length, expected.length, `${label}: quantidade de elementos alterada`);
+
+  const remaining = new Map();
+  for (const car of expected) {
+    remaining.set(car.id, (remaining.get(car.id) ?? 0) + 1);
+  }
+
+  for (const car of actual) {
+    const count = remaining.get(car.id) ?? 0;
+    assert.ok(count > 0, `${label}: elemento duplicado ou desconhecido (id ${car.id})`);
+    remaining.set(car.id, count - 1);
+  }
+
+  assert.ok(
+    [...remaining.values()].every((count) => count === 0),
+    `${label}: elementos perdidos`,
+  );
+}
 
 export function assertSortsCorrectly(algorithm) {
   for (const [caseName, makeInput] of Object.entries(CASES)) {
@@ -90,13 +119,13 @@ export function assertSortsCorrectly(algorithm) {
       for (const order of SORT_ORDERS) {
         const label = `${caseName} / ${field} / ${order}`;
         const input = makeInput(field);
-        const expected = referenceSort(input, field, order).map((car) => car[field]);
+        const compare = createComparator(field, order);
 
         const run = withoutBuiltinSort(() => runSort(algorithm, input, { field, order }));
 
         assert.ok(Array.isArray(run.result), `${label}: o algoritmo deve retornar um array`);
-        assert.deepEqual(run.result.map((car) => car[field]), expected, `${label}: ordem incorreta`);
-        assert.deepEqual(ids(run.result), ids(input), `${label}: elementos perdidos ou duplicados`);
+        assertInOrder(run.result, compare, label);
+        assertSameIds(run.result, input, label);
         assert.ok(Number.isInteger(run.comparisons) && run.comparisons >= 0, `${label}: comparações inválidas`);
         assert.ok(Number.isInteger(run.moves) && run.moves >= 0, `${label}: movimentações inválidas`);
       }
