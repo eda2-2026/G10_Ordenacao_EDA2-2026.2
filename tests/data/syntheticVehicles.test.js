@@ -28,6 +28,12 @@ describe('generateVehicles', () => {
     assert.equal(ids.size, 100);
   });
 
+  it('gera todos os tamanhos disponíveis na interface', () => {
+    for (const size of [20, 100, 1000, 10000]) {
+      assert.equal(generateVehicles(size).length, size);
+    }
+  });
+
   it('produz o mesmo resultado com a mesma semente', () => {
     assert.deepEqual(generateVehicles(20), generateVehicles(20, { seed: DEFAULT_SEED }));
   });

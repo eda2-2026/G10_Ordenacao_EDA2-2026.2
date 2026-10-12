@@ -1,8 +1,12 @@
 import { ALGORITHMS } from './sorting/algorithms/index.js';
 import { runSort } from './sorting/runner.js';
 import { renderCatalogError, renderMetrics, renderVehicles } from './ui/catalog.js';
+import { generateVehicles } from './data/syntheticVehicles.js';
+import { formatInteger } from './ui/formatters.js';
 
 const DATA_URL = './data/sample-vehicles.json';
+const DISPLAY_LIMIT = 20;
+const DATASET_SIZES = new Set([20, 100, 1000, 10000]);
 
 const algorithmLabels = {
   insertion: 'Insertion Sort',
@@ -26,6 +30,7 @@ const orderLabels = {
 
 const elements = {
   form: document.querySelector('#sort-form'),
+  size: document.querySelector('#size'),
   algorithm: document.querySelector('#algorithm'),
   field: document.querySelector('#field'),
   order: document.querySelector('#order'),
@@ -45,9 +50,12 @@ const elements = {
 
 let sourceVehicles = [];
 
-function updateVehicleCount(count) {
-  elements.vehicleCount.textContent = String(count).padStart(2, '0');
-  elements.catalogCount.textContent = `${count} ${count === 1 ? 'veículo' : 'veículos'}`;
+function updateVehicleCount(total, displayed = total) {
+  elements.vehicleCount.textContent = formatInteger(total);
+  elements.catalogCount.textContent =
+    displayed === total
+      ? `${formatInteger(total)} ${total === 1 ? 'veículo' : 'veículos'}`
+      : `Exibindo ${formatInteger(displayed)} de ${formatInteger(total)}`;
 }
 
 function setStatus(message, { error = false } = {}) {
@@ -69,22 +77,51 @@ async function loadVehicles() {
   return vehicles;
 }
 
-function sortCatalog(event) {
+function waitForNextPaint() {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+async function sortCatalog(event) {
   event.preventDefault();
 
+  const size = Number(elements.size.value);
   const algorithmName = elements.algorithm.value;
   const field = elements.field.value;
   const order = elements.order.value;
   const algorithm = ALGORITHMS[algorithmName];
 
-  if (!algorithm || sourceVehicles.length === 0) return;
+  if (!DATASET_SIZES.has(size) || !algorithm || sourceVehicles.length === 0) return;
 
-  const run = runSort(algorithm, sourceVehicles, { field, order });
-  renderVehicles(elements.catalog, elements.template, run.result);
-  renderMetrics(elements.metrics, run);
+  elements.button.disabled = true;
+  const intensiveInsertion = algorithmName === 'insertion' && size === 10000;
   setStatus(
-    `${algorithmLabels[algorithmName]} ordenou ${run.result.length} veículos por ${fieldLabels[field]}, em ${orderLabels[order]}.`,
+    intensiveInsertion
+      ? 'Executando Insertion Sort com 10.000 veículos. Esta combinação pode demorar…'
+      : `Preparando ${formatInteger(size)} veículos para ordenação…`,
   );
+  await waitForNextPaint();
+
+  try {
+    const vehicles = size === sourceVehicles.length ? sourceVehicles : generateVehicles(size);
+    const run = runSort(algorithm, vehicles, { field, order });
+    const displayedVehicles = run.result.slice(0, DISPLAY_LIMIT);
+    const displayMessage =
+      displayedVehicles.length < run.result.length
+        ? ` Exibindo os primeiros ${formatInteger(displayedVehicles.length)}.`
+        : '';
+
+    renderVehicles(elements.catalog, elements.template, displayedVehicles);
+    renderMetrics(elements.metrics, run);
+    updateVehicleCount(run.result.length, displayedVehicles.length);
+    setStatus(
+      `${algorithmLabels[algorithmName]} ordenou ${formatInteger(run.result.length)} veículos por ${fieldLabels[field]}, em ${orderLabels[order]}.${displayMessage}`,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Não foi possível ordenar o catálogo.';
+    setStatus(message, { error: true });
+  } finally {
+    elements.button.disabled = false;
+  }
 }
 
 async function initialize() {

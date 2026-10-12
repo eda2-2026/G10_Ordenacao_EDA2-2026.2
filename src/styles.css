@@ -218,7 +218,7 @@ select {
 
 .sort-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
   gap: 14px;
   padding: 20px;
   background: var(--color-surface);
@@ -534,6 +534,10 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .sort-button {
+    grid-column: 1 / -1;
+  }
+
   .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -601,6 +605,7 @@ select {
   }
 
   .sort-button {
+    grid-column: auto;
     margin-top: 4px;
   }
 

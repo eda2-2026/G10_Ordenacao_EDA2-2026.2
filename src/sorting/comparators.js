@@ -2,6 +2,8 @@ export function isMissing(value) {
   return value === null || value === undefined || Number.isNaN(value);
 }
 
+const textCollator = new Intl.Collator('pt-BR', { sensitivity: 'base' });
+
 // Valores ausentes ficam no fim. Retorna null quando nenhum dos dois está ausente
 function compareMissing(a, b) {
   const aMissing = isMissing(a);
@@ -19,12 +21,12 @@ export function compareNumbers(a, b) {
   return compareMissing(a, b) ?? a - b;
 }
 
-// Ordena textos em ordem alfabética. 
+// Ordena textos em ordem alfabética.
 export function compareStrings(a, b) {
-  return compareMissing(a, b) ?? String(a).localeCompare(String(b), 'pt-BR', { sensitivity: 'base' });
+  return compareMissing(a, b) ?? textCollator.compare(String(a), String(b));
 }
 
-// Compara objetos pelo atributo `field` 
+// Compara objetos pelo atributo `field`
 export function byField(field, compare) {
   return (a, b) => compare(a[field], b[field]);
 }
