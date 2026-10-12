@@ -8,7 +8,8 @@
     "start": "node scripts/serve.js",
     "test": "node --test",
     "data": "node scripts/prepare-data.js",
-    "data:generate": "node scripts/generate-data.js"
+    "data:generate": "node scripts/generate-data.js",
+    "benchmark": "node scripts/benchmark.js"
   },
   "engines": {
     "node": ">=20"
