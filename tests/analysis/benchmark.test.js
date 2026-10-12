@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { SCENARIOS, median, prepareInput, runBenchmark } from '../../src/analysis/benchmark.js';
 import { createComparator } from '../../src/sorting/comparators.js';
 
-// Preços distintos e embaralhados (7919 é primo, então i * 7919 % n percorre 0..n-1 sem repetir).
+
 function distinctPrices(count) {
   return Array.from({ length: count }, (_, id) => ({ id, price: ((id * 7919) % count) * 1000 }));
 }

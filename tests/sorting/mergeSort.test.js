@@ -58,6 +58,6 @@ describe('mergeSort', () => {
     });
 
     assert.equal(run.result[0].price, 1);
-    assert.equal(run.moves, 2 * 1024 * 10); // cada um dos 10 níveis copia e devolve os 1024 elementos
+    assert.equal(run.moves, 2 * 1024 * 10); 
   });
 });

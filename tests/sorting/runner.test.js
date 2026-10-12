@@ -27,9 +27,9 @@ describe('runSort', () => {
 
   it('preenche comparações, trocas e movimentações', () => {
     const { comparisons, swaps, moves } = runSort(selectionSort, cars, { field: 'price' });
-    assert.equal(comparisons, 3); // n(n-1)/2 para n = 3
+    assert.equal(comparisons, 3); 
     assert.equal(swaps, 1);
-    assert.equal(moves, 3); // 1 troca: 45000 <-> 30000
+    assert.equal(moves, 3); 
   });
 
   it('mede o tempo de execução', () => {
