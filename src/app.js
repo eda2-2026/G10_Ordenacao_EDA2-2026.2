@@ -1,6 +1,8 @@
+import { runBenchmark } from './analysis/benchmark.js';
 import { ALGORITHMS } from './sorting/algorithms/index.js';
 import { runSort } from './sorting/runner.js';
 import { renderCatalogError, renderMetrics, renderVehicles } from './ui/catalog.js';
+import { renderComparison } from './ui/comparison.js';
 import { generateVehicles } from './data/syntheticVehicles.js';
 import { formatInteger } from './ui/formatters.js';
 
@@ -28,6 +30,12 @@ const orderLabels = {
   desc: 'ordem decrescente',
 };
 
+const scenarioLabels = {
+  random: 'entrada aleatória',
+  sorted: 'entrada já ordenada',
+  reversed: 'entrada em ordem inversa',
+};
+
 const elements = {
   form: document.querySelector('#sort-form'),
   size: document.querySelector('#size'),
@@ -39,6 +47,13 @@ const elements = {
   catalog: document.querySelector('#catalog'),
   template: document.querySelector('#vehicle-card-template'),
   vehicleCount: document.querySelector('#vehicle-count'),
+  comparison: {
+    form: document.querySelector('#comparison-form'),
+    scenario: document.querySelector('#scenario'),
+    button: document.querySelector('#comparison-button'),
+    status: document.querySelector('#comparison-status'),
+    body: document.querySelector('#comparison-body'),
+  },
   catalogCount: document.querySelector('#catalog-count'),
   metrics: {
     comparisons: document.querySelector('#metric-comparisons'),
@@ -58,9 +73,13 @@ function updateVehicleCount(total, displayed = total) {
       : `Exibindo ${formatInteger(displayed)} de ${formatInteger(total)}`;
 }
 
-function setStatus(message, { error = false } = {}) {
-  elements.status.textContent = message;
-  elements.status.classList.toggle('status--error', error);
+function setStatus(message, { error = false, target = elements.status } = {}) {
+  target.textContent = message;
+  target.classList.toggle('status--error', error);
+}
+
+function vehiclesForSize(size) {
+  return size === sourceVehicles.length ? sourceVehicles : generateVehicles(size);
 }
 
 async function loadVehicles() {
@@ -102,7 +121,7 @@ async function sortCatalog(event) {
   await waitForNextPaint();
 
   try {
-    const vehicles = size === sourceVehicles.length ? sourceVehicles : generateVehicles(size);
+    const vehicles = vehiclesForSize(size);
     const run = runSort(algorithm, vehicles, { field, order });
     const displayedVehicles = run.result.slice(0, DISPLAY_LIMIT);
     const displayMessage =
@@ -124,8 +143,56 @@ async function sortCatalog(event) {
   }
 }
 
+async function compareAlgorithms(event) {
+  event.preventDefault();
+
+  const size = Number(elements.size.value);
+  const field = elements.field.value;
+  const order = elements.order.value;
+  const scenario = elements.comparison.scenario.value;
+  const { button, status, body } = elements.comparison;
+
+  if (!DATASET_SIZES.has(size) || !scenarioLabels[scenario] || sourceVehicles.length === 0) return;
+
+  const repetitions = size >= 10000 ? 1 : 3;
+
+  button.disabled = true;
+  setStatus(
+    size >= 10000
+      ? 'Comparando com 10.000 veículos. O Insertion Sort pode levar alguns segundos…'
+      : `Comparando os algoritmos com ${formatInteger(size)} veículos…`,
+    { target: status },
+  );
+  await waitForNextPaint();
+
+  try {
+    const vehicles = vehiclesForSize(size);
+    const results = runBenchmark({
+      sizes: [size],
+      scenarios: [scenario],
+      field,
+      order,
+      repetitions,
+      makeData: () => vehicles,
+    });
+
+    renderComparison(body, results, algorithmLabels);
+    setStatus(
+      `${formatInteger(size)} veículos por ${fieldLabels[field]}, em ${orderLabels[order]}, com ${scenarioLabels[scenario]}. ` +
+        (repetitions > 1 ? `Tempo: mediana de ${repetitions} execuções.` : 'Tempo de uma execução.'),
+      { target: status },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Não foi possível comparar os algoritmos.';
+    setStatus(message, { error: true, target: status });
+  } finally {
+    button.disabled = false;
+  }
+}
+
 async function initialize() {
   elements.button.disabled = true;
+  elements.comparison.button.disabled = true;
 
   try {
     sourceVehicles = await loadVehicles();
@@ -133,6 +200,7 @@ async function initialize() {
     updateVehicleCount(sourceVehicles.length);
     setStatus(`${sourceVehicles.length} veículos carregados. Escolha os parâmetros para iniciar.`);
     elements.button.disabled = false;
+    elements.comparison.button.disabled = false;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Não foi possível iniciar o catálogo.';
     setStatus(message, { error: true });
@@ -141,4 +209,5 @@ async function initialize() {
 }
 
 elements.form.addEventListener('submit', sortCatalog);
+elements.comparison.form.addEventListener('submit', compareAlgorithms);
 initialize();

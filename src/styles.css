@@ -55,6 +55,7 @@ select {
 .hero,
 .workspace,
 .results,
+.comparison,
 .catalog-section,
 .site-footer {
   width: min(1180px, calc(100% - 40px));
@@ -187,6 +188,7 @@ select {
 
 .workspace,
 .results,
+.comparison,
 .catalog-section {
   padding-top: 88px;
 }
@@ -340,6 +342,93 @@ select {
 
 .metric--accent dt {
   color: #adafb7;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.comparison__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) auto;
+  justify-content: start;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-medium);
+}
+
+.comparison__table-wrapper {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-medium);
+}
+
+.comparison__table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.comparison__table th,
+.comparison__table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid #ece8e2;
+}
+
+.comparison__table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.comparison__table thead th {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.comparison__table tbody th {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.comparison__table td {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.comparison__bar {
+  display: block;
+  width: calc(var(--ratio, 0) * 100%);
+  min-width: 2px;
+  height: 6px;
+  margin-top: 8px;
+  background: #c9c3ba;
+  border-radius: 999px;
+}
+
+.comparison__cell--best {
+  color: var(--color-accent-dark);
+}
+
+.comparison__cell--best .comparison__bar {
+  background: var(--color-accent);
+}
+
+.comparison__empty {
+  color: var(--color-muted);
+  font-weight: 400 !important;
+  text-align: center !important;
 }
 
 .catalog {
@@ -552,6 +641,7 @@ select {
   .hero,
   .workspace,
   .results,
+  .comparison,
   .catalog-section,
   .site-footer {
     width: min(100% - 24px, 1180px);
@@ -582,8 +672,13 @@ select {
 
   .workspace,
   .results,
+  .comparison,
   .catalog-section {
     padding-top: 64px;
+  }
+
+  .comparison__controls {
+    grid-template-columns: 1fr;
   }
 
   .section-heading,

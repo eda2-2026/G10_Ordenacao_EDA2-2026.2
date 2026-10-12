@@ -133,6 +133,54 @@
         </dl>
       </section>
 
+      <section class="comparison" aria-labelledby="comparison-title">
+        <div class="results__header">
+          <div>
+            <p class="eyebrow">Análise</p>
+            <h2 id="comparison-title">Comparação entre algoritmos</h2>
+          </div>
+          <p class="status" id="comparison-status" role="status" aria-live="polite">
+            Executa os quatro algoritmos com a quantidade, o critério e a ordem escolhidos acima.
+          </p>
+        </div>
+
+        <form class="comparison__controls" id="comparison-form">
+          <label class="control">
+            <span>Entrada</span>
+            <select id="scenario" name="scenario">
+              <option value="random" selected>Aleatória</option>
+              <option value="sorted">Já ordenada</option>
+              <option value="reversed">Ordem inversa</option>
+            </select>
+          </label>
+
+          <button class="sort-button" id="comparison-button" type="submit">
+            <span>Comparar algoritmos</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <div class="comparison__table-wrapper">
+          <table class="comparison__table">
+            <caption class="visually-hidden">Métricas de cada algoritmo; o menor valor de cada coluna é destacado.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Algoritmo</th>
+                <th scope="col">Comparações</th>
+                <th scope="col">Trocas</th>
+                <th scope="col">Movimentações</th>
+                <th scope="col">Tempo</th>
+              </tr>
+            </thead>
+            <tbody id="comparison-body">
+              <tr>
+                <td class="comparison__empty" colspan="5">Nenhuma comparação executada ainda.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="catalog-section" aria-labelledby="catalog-title">
         <div class="catalog-section__header">
           <div>
