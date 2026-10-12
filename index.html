@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Catálogo acadêmico para comparar algoritmos de ordenação aplicados a veículos."
+    />
+    <title>AutoSort — Catálogo de veículos</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#catalog">Ir para o catálogo</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="AutoSort — início">
+        <span class="brand__mark" aria-hidden="true">A</span>
+        <span>AutoSort</span>
+      </a>
+      <span class="site-header__tag">Projeto EDA2</span>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__content">
+          <p class="eyebrow">Laboratório de ordenação</p>
+          <h1 id="hero-title">Veículos em ordem.<br />Algoritmos em evidência.</h1>
+          <p class="hero__description">
+            Escolha um algoritmo e veja como ele organiza o catálogo enquanto cada operação é contabilizada.
+          </p>
+        </div>
+
+        <dl class="hero__summary" aria-label="Resumo do projeto">
+          <div>
+            <dt>Algoritmos</dt>
+            <dd>04</dd>
+          </div>
+          <div>
+            <dt>Critérios</dt>
+            <dd>05</dd>
+          </div>
+          <div>
+            <dt>Veículos</dt>
+            <dd id="vehicle-count">—</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="workspace" aria-labelledby="workspace-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Experimento</p>
+            <h2 id="workspace-title">Configure a ordenação</h2>
+          </div>
+          <p>Todos os algoritmos foram implementados manualmente em JavaScript.</p>
+        </div>
+
+        <form class="sort-controls" id="sort-form">
+          <label class="control">
+            <span>Algoritmo</span>
+            <select id="algorithm" name="algorithm">
+              <option value="insertion">Insertion Sort</option>
+              <option value="merge">Merge Sort</option>
+              <option value="quick" selected>Quick Sort</option>
+              <option value="heap">Heap Sort</option>
+            </select>
+          </label>
+
+          <label class="control">
+            <span>Ordenar por</span>
+            <select id="field" name="field">
+              <option value="brand">Marca</option>
+              <option value="model">Modelo</option>
+              <option value="year">Ano</option>
+              <option value="mileage">Quilometragem</option>
+              <option value="price" selected>Preço</option>
+            </select>
+          </label>
+
+          <label class="control">
+            <span>Ordem</span>
+            <select id="order" name="order">
+              <option value="asc">Crescente</option>
+              <option value="desc">Decrescente</option>
+            </select>
+          </label>
+
+          <button class="sort-button" id="sort-button" type="submit">
+            <span>Ordenar catálogo</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      </section>
+
+      <section class="results" aria-labelledby="results-title">
+        <div class="results__header">
+          <div>
+            <p class="eyebrow">Resultado</p>
+            <h2 id="results-title">Métricas da execução</h2>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite">Carregando veículos…</p>
+        </div>
+
+        <dl class="metrics" aria-label="Métricas do algoritmo selecionado">
+          <div class="metric">
+            <dt>Comparações</dt>
+            <dd id="metric-comparisons">—</dd>
+          </div>
+          <div class="metric">
+            <dt>Trocas</dt>
+            <dd id="metric-swaps">—</dd>
+          </div>
+          <div class="metric">
+            <dt>Movimentações</dt>
+            <dd id="metric-moves">—</dd>
+          </div>
+          <div class="metric metric--accent">
+            <dt>Tempo</dt>
+            <dd id="metric-time">—</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="catalog-section" aria-labelledby="catalog-title">
+        <div class="catalog-section__header">
+          <div>
+            <p class="eyebrow">Catálogo</p>
+            <h2 id="catalog-title">Veículos disponíveis</h2>
+          </div>
+          <span class="catalog-count" id="catalog-count">0 veículos</span>
+        </div>
+
+        <div class="catalog" id="catalog" aria-busy="true"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>AutoSort</span>
+      <p>Estruturas de Dados 2 · Análise de algoritmos de ordenação</p>
+    </footer>
+
+    <template id="vehicle-card-template">
+      <article class="vehicle-card">
+        <div class="vehicle-card__visual" data-field="visual">
+          <span class="vehicle-card__initials" data-field="initials"></span>
+          <span class="vehicle-card__type" data-field="bodyType"></span>
+        </div>
+        <div class="vehicle-card__content">
+          <p class="vehicle-card__brand" data-field="brand"></p>
+          <h3 data-field="model"></h3>
+          <p class="vehicle-card__version" data-field="version"></p>
+
+          <dl class="vehicle-card__details">
+            <div>
+              <dt>Ano</dt>
+              <dd data-field="year"></dd>
+            </div>
+            <div>
+              <dt>Quilometragem</dt>
+              <dd data-field="mileage"></dd>
+            </div>
+            <div>
+              <dt>Combustível</dt>
+              <dd data-field="fuel"></dd>
+            </div>
+          </dl>
+
+          <div class="vehicle-card__footer">
+            <div>
+              <span class="vehicle-card__location" data-field="location"></span>
+              <strong data-field="price"></strong>
+            </div>
+            <span class="vehicle-card__id" data-field="id"></span>
+          </div>
+        </div>
+      </article>
+    </template>
+  </body>
+</html>
