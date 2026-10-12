@@ -6,7 +6,7 @@
 
 | Matrícula | Aluno |
 | --- | --- |
-| — | Enzo Menali |
+| 241011054 | Enzo Menali |
 | 241025971 | Paulo Vitor Gomes |
 
 ## Sobre
@@ -21,6 +21,8 @@ O usuário escolhe:
 - a **quantidade** de veículos: 20, 100, 1.000 ou 10.000.
 
 Além da lista ordenada, a aplicação mostra o tempo de execução e quantas comparações, trocas e movimentações o algoritmo fez. Uma seção de comparação executa os quatro algoritmos sobre a mesma entrada, que pode ser aleatória, já ordenada ou em ordem inversa, e mostra os resultados lado a lado.
+
+A aplicação carrega uma base fixa e versionada com 10.000 veículos sintéticos. As opções de 20, 100, 1.000 e 10.000 usam recortes dessa mesma base, garantindo que todos os algoritmos recebam exatamente os mesmos registros.
 
 Os algoritmos foram implementados manualmente. A aplicação usa só JavaScript, HTML e CSS, sem frameworks nem dependências externas.
 
@@ -59,8 +61,9 @@ Os comparadores ficam em [src/sorting/comparators.js](src/sorting/comparators.js
 
 ## Dados
 
-- **Veículos sintéticos** ([src/data/syntheticVehicles.js](src/data/syntheticVehicles.js)): a interface e o benchmark usam um gerador com semente fixa. Os mesmos parâmetros produzem sempre os mesmos veículos, e é possível gerar listas maiores que um dataset real. O catálogo inicial ([data/sample-vehicles.json](data/sample-vehicles.json)) tem 20 veículos.
-- **Dataset da Webmotors (opcional):** o projeto também normaliza a [amostra de 1.000 anúncios da Bright Data](https://github.com/luminati-io/Webmotors-dataset-sample). Para usá-lo, coloque o CSV em `data/raw/Webmotors-dataset-sample.csv` e rode `npm run data`. A normalização ([src/data/vehicles.js](src/data/vehicles.js)) mantém apenas os dados do veículo e descarta telefone, CPF/CNPJ, nome do vendedor e descrição.
+- **Base principal** ([data/vehicles.json](data/vehicles.json)): contém 10.000 veículos sintéticos e é carregada pela interface e pelo benchmark. Para cada experimento, a aplicação usa os primeiros 20, 100, 1.000 ou 10.000 registros, conforme a quantidade escolhida.
+- **Gerador** ([src/data/syntheticVehicles.js](src/data/syntheticVehicles.js)): recria a base com uma semente fixa. Os mesmos parâmetros sempre produzem os mesmos veículos. A amostra de 20 registros em [data/sample-vehicles.json](data/sample-vehicles.json) é mantida como referência e usada nos testes.
+- **Dataset da Webmotors (opcional):** o projeto também normaliza a [amostra de 1.000 anúncios da Bright Data](https://github.com/luminati-io/Webmotors-dataset-sample). Para processá-la, coloque o CSV em `data/raw/Webmotors-dataset-sample.csv` e rode `npm run data`. O resultado é salvo separadamente em `data/webmotors-vehicles.json`, sem substituir a base principal. A normalização ([src/data/vehicles.js](src/data/vehicles.js)) descarta telefone, CPF/CNPJ, nome do vendedor e descrição.
 
 ## Instalação
 
@@ -92,7 +95,7 @@ Com 20 ou 100 veículos os tempos podem empatar; nesses casos, compare pelas con
 npm test
 ```
 
-Usa o executor de testes nativo do Node (`node:test`), com 122 testes. Além dos testes específicos de cada algoritmo, o helper [tests/sorting/helpers.js](tests/sorting/helpers.js) valida todos os algoritmos registrados nos casos abaixo:
+Usa o executor de testes nativo do Node (`node:test`), com 125 testes. Além dos testes específicos de cada algoritmo, o helper [tests/sorting/helpers.js](tests/sorting/helpers.js) valida todos os algoritmos registrados nos casos abaixo:
 
 - lista vazia e lista com um elemento;
 - lista já ordenada e lista em ordem inversa;
@@ -110,14 +113,14 @@ npm run benchmark
 npm run benchmark -- --sizes=100,1000,10000 --field=price --order=asc --reps=5 --csv=resultados.csv
 ```
 
-Executa os quatro algoritmos sobre as mesmas entradas, nos cenários aleatório, já ordenado e invertido, e imprime uma tabela por cenário. O tempo é a mediana das repetições, e a opção `--csv` salva os resultados.
+Executa os quatro algoritmos sobre os mesmos recortes de `data/vehicles.json`, nos cenários aleatório, já ordenado e invertido, e imprime uma tabela por cenário. O tempo é a mediana das repetições, e a opção `--csv` salva os resultados.
 
 ### Outros comandos
 
 | Comando | Descrição |
 | --- | --- |
-| `npm run data` | Normaliza o CSV da Webmotors em `data/vehicles.json` |
-| `npm run data:generate -- 100 data/vehicles.json 2026` | Gera veículos sintéticos |
+| `npm run data` | Normaliza o CSV da Webmotors em `data/webmotors-vehicles.json` |
+| `npm run data:generate` | Recria a base principal com 10.000 veículos e a semente padrão |
 
 ## Resultados
 
@@ -153,7 +156,8 @@ Resultados com 10.000 veículos ordenados por preço em ordem crescente. Foram o
 ```text
 ├── index.html                  # página do catálogo
 ├── data/
-│   └── sample-vehicles.json    # 20 veículos sintéticos exibidos inicialmente
+│   ├── vehicles.json           # base principal com 10.000 veículos sintéticos
+│   └── sample-vehicles.json    # amostra de 20 veículos usada nos testes
 ├── scripts/
 │   ├── serve.js                # servidor estático (npm start)
 │   ├── benchmark.js            # benchmark no terminal (npm run benchmark)

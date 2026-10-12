@@ -11,5 +11,5 @@ Thumbs.db
 .vscode/
 
 data/raw/
-data/vehicles.json
+data/webmotors-vehicles.json
 

@@ -3,12 +3,12 @@ import { ALGORITHMS } from './sorting/algorithms/index.js';
 import { runSort } from './sorting/runner.js';
 import { renderCatalogError, renderMetrics, renderVehicles } from './ui/catalog.js';
 import { renderComparison } from './ui/comparison.js';
-import { generateVehicles } from './data/syntheticVehicles.js';
 import { formatInteger } from './ui/formatters.js';
 
-const DATA_URL = './data/sample-vehicles.json';
+const DATA_URL = './data/vehicles.json';
 const DISPLAY_LIMIT = 20;
 const DATASET_SIZES = new Set([20, 100, 1000, 10000]);
+const REQUIRED_DATASET_SIZE = Math.max(...DATASET_SIZES);
 
 const algorithmLabels = {
   insertion: 'Insertion Sort',
@@ -65,8 +65,11 @@ const elements = {
 
 let sourceVehicles = [];
 
-function updateVehicleCount(total, displayed = total) {
+function updateDatasetCount(total) {
   elements.vehicleCount.textContent = formatInteger(total);
+}
+
+function updateCatalogCount(total, displayed = total) {
   elements.catalogCount.textContent =
     displayed === total
       ? `${formatInteger(total)} ${total === 1 ? 'veículo' : 'veículos'}`
@@ -79,7 +82,11 @@ function setStatus(message, { error = false, target = elements.status } = {}) {
 }
 
 function vehiclesForSize(size) {
-  return size === sourceVehicles.length ? sourceVehicles : generateVehicles(size);
+  if (sourceVehicles.length < size) {
+    throw new RangeError(`A base contém apenas ${formatInteger(sourceVehicles.length)} veículos.`);
+  }
+
+  return sourceVehicles.slice(0, size);
 }
 
 async function loadVehicles() {
@@ -91,6 +98,11 @@ async function loadVehicles() {
   const vehicles = await response.json();
   if (!Array.isArray(vehicles)) {
     throw new TypeError('O arquivo de veículos não contém uma lista válida.');
+  }
+  if (vehicles.length < REQUIRED_DATASET_SIZE) {
+    throw new RangeError(
+      `A base precisa conter pelo menos ${formatInteger(REQUIRED_DATASET_SIZE)} veículos.`,
+    );
   }
 
   return vehicles;
@@ -131,7 +143,7 @@ async function sortCatalog(event) {
 
     renderVehicles(elements.catalog, elements.template, displayedVehicles);
     renderMetrics(elements.metrics, run);
-    updateVehicleCount(run.result.length, displayedVehicles.length);
+    updateCatalogCount(run.result.length, displayedVehicles.length);
     setStatus(
       `${algorithmLabels[algorithmName]} ordenou ${formatInteger(run.result.length)} veículos por ${fieldLabels[field]}, em ${orderLabels[order]}.${displayMessage}`,
     );
@@ -196,9 +208,13 @@ async function initialize() {
 
   try {
     sourceVehicles = await loadVehicles();
-    renderVehicles(elements.catalog, elements.template, sourceVehicles);
-    updateVehicleCount(sourceVehicles.length);
-    setStatus(`${sourceVehicles.length} veículos carregados. Escolha os parâmetros para iniciar.`);
+    const initialVehicles = sourceVehicles.slice(0, DISPLAY_LIMIT);
+    renderVehicles(elements.catalog, elements.template, initialVehicles);
+    updateDatasetCount(sourceVehicles.length);
+    updateCatalogCount(sourceVehicles.length, initialVehicles.length);
+    setStatus(
+      `${formatInteger(sourceVehicles.length)} veículos carregados. Escolha os parâmetros para iniciar.`,
+    );
     elements.button.disabled = false;
     elements.comparison.button.disabled = false;
   } catch (error) {

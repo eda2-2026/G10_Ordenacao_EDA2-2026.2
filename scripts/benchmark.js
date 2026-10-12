@@ -1,6 +1,6 @@
 // Compara os algoritmos em vários tamanhos e cenários de entrada.
 // npm run benchmark [-- --sizes=100,1000,10000 --field=price --order=asc --reps=3 --csv=benchmark.csv]
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 import { SCENARIOS, runBenchmark } from '../src/analysis/benchmark.js';
 
@@ -15,13 +15,29 @@ const sizes = (options.sizes ?? '100,1000,10000').split(',').map(Number);
 const field = options.field ?? 'price';
 const order = options.order ?? 'asc';
 const repetitions = Number(options.reps ?? 3);
+const dataset = JSON.parse(readFileSync(new URL('../data/vehicles.json', import.meta.url), 'utf8'));
 
-if (sizes.some((size) => !Number.isInteger(size) || size < 0) || !Number.isInteger(repetitions) || repetitions < 1) {
+if (
+  sizes.some((size) => !Number.isInteger(size) || size < 0) ||
+  !Number.isInteger(repetitions) ||
+  repetitions < 1
+) {
   throw new TypeError('Use tamanhos e repetições inteiros, por exemplo --sizes=100,1000 --reps=3.');
 }
+if (!Array.isArray(dataset) || sizes.some((size) => size > dataset.length)) {
+  throw new RangeError('A base deve conter veículos suficientes para o maior tamanho solicitado.');
+}
 
-console.log(`Ordenando por ${field} (${order}), mediana de ${repetitions} execuções.\n`);
-const results = runBenchmark({ sizes, scenarios: SCENARIOS, field, order, repetitions });
+const repetitionLabel = repetitions === 1 ? 'execução' : 'execuções';
+console.log(`Ordenando por ${field} (${order}), mediana de ${repetitions} ${repetitionLabel}.\n`);
+const results = runBenchmark({
+  sizes,
+  scenarios: SCENARIOS,
+  field,
+  order,
+  repetitions,
+  makeData: (size) => dataset.slice(0, size),
+});
 
 for (const scenario of SCENARIOS) {
   console.log(`Cenário: ${scenario}`);

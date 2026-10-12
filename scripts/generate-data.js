@@ -3,7 +3,7 @@ import { dirname, relative, resolve } from 'node:path';
 
 import { DEFAULT_SEED, generateVehicles } from '../src/data/syntheticVehicles.js';
 
-const [sizeText = '100', outputText = 'data/vehicles.json', seedText = String(DEFAULT_SEED)] = process.argv.slice(2);
+const [sizeText = '10000', outputText = 'data/vehicles.json', seedText = String(DEFAULT_SEED)] = process.argv.slice(2);
 
 function parseArgument(value, name) {
   if (!/^\d+$/.test(value)) {
