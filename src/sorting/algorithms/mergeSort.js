@@ -1,4 +1,4 @@
-
+// Intercala duas metades ordenadas usando um vetor auxiliar.
 function merge(arr, aux, left, mid, right, compare, metrics) {
   for (let k = left; k <= right; k++) {
     aux[k] = arr[k];
@@ -16,6 +16,7 @@ function merge(arr, aux, left, mid, right, compare, metrics) {
     } else if (compare(aux[j], aux[i]) < 0) {
       arr[k] = aux[j++];
     } else {
+      // Em caso de empate, mantém primeiro o elemento da metade esquerda.
       arr[k] = aux[i++];
     }
     metrics.move();

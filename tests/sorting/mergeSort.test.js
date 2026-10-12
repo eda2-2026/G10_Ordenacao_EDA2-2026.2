@@ -52,7 +52,7 @@ describe('mergeSort', () => {
     assert.deepEqual(run.result.map((car) => car.id), [2, 0, 1]);
   });
 
-  it('faz sempre n·log2(n) movimentações em listas de tamanho potência de 2', () => {
+  it('faz sempre 2·n·log2(n) movimentações em listas de tamanho potência de 2', () => {
     const run = runSort(mergeSort, carsWithPrices(Array.from({ length: 1024 }, (_, i) => 1024 - i)), {
       field: 'price',
     });

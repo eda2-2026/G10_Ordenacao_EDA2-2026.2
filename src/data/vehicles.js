@@ -34,7 +34,7 @@ export function normalizeVehicle(row) {
   };
 }
 
-// Descarta anúncios sem id e ids repetidos 
+// Descarta anúncios sem id e ids repetidos
 export function normalizeVehicles(rows) {
   const seen = new Set();
   const vehicles = [];

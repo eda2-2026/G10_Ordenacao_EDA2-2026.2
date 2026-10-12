@@ -32,7 +32,7 @@ describe('heapSort', () => {
 
     assert.deepEqual(run.result.map((car) => car.price), [10000, 20000, 30000]);
     assert.equal(run.comparisons, 3);
-    assert.equal(run.swaps, 4); // 1 na construção do heap + 3 nas extrações
+    assert.equal(run.swaps, 4); // 1 na construção + 2 extrações da raiz + 1 reparo do heap
     assert.equal(run.moves, 12);
   });
 
