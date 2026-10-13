@@ -9,6 +9,10 @@
 | 241011054 | Enzo Menali |
 | 241025971 | Paulo Vitor Gomes |
 
+## Apresentação
+
+Vídeo de apresentação: [Vídeo Entrega 2](https://docs.google.com/videos/d/1CeZ33UXftWCpdm9WiFjlNg4AV8ej7QVeOBxt3IGpY_g/play?usp=sharing)
+
 ## Sobre
 
 O AutoSort é um catálogo de veículos, inspirado em sites de classificados como a Webmotors, usado como aplicação prática para implementar e comparar algoritmos de ordenação.
@@ -183,7 +187,3 @@ Resultados com 10.000 veículos ordenados por preço em ordem crescente. Foram o
 | --- | --- |
 | Enzo Menali | Estrutura inicial do projeto; Insertion Sort e Quick Sort; contagem de trocas e movimentações; gerador de veículos sintéticos; catálogo e controles da interface |
 | Paulo Vitor Gomes | Comparadores e critérios de ordenação; métricas e runner; registro de algoritmos; Merge Sort e Heap Sort; normalização do dataset; benchmark e comparação na interface |
-
-## Apresentação
-
-Vídeo de apresentação: *em produção*.
